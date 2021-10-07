@@ -14,8 +14,7 @@ import List from "@mui/material/List";
 import Alert from "@mui/material/Alert";
 import Stack from "@mui/material/Stack";
 import AlertTitle from "@mui/material/AlertTitle";
-import NoteAddIcon from "@mui/icons-material/NoteAdd";
-import FactCheckIcon from "@mui/icons-material/FactCheck";
+import { borderRight } from "@mui/system";
 
 const useStyles = makeStyles({
   root: {
@@ -31,28 +30,18 @@ function Editor(props) {
   const [fileName, setFileName] = React.useState("");
   const [idOfDoc, setIdOfDoc] = React.useState("");
   const [alertMessage, setAlertMessage] = React.useState("");
-  const [getDB, setGetDB] = React.useState("");
 
   //API NODE.JS
 
   const [api, setApi] = React.useState();
 
-  var url = "http://localhost:1337";
-  const hostArray = ["localhost", "127.0.0.1"];
-
-  if (hostArray.includes(window.location.hostname)) {
-    url = "http://localhost:1337";
-  } else {
-    url = "https://jsramverk-editor-afbo19.azurewebsites.net/";
-  }
-
   useEffect(() => {
-    fetch(url + "/get")
+    fetch("http://localhost:1337/get")
       .then((result) => result.json())
       .then((result) => setApi(result));
-    setGetDB("");
+
     return () => {};
-  }, [getDB]);
+  }, []);
 
   const getEditorValue = () => {
     console.log(editorValue);
@@ -60,7 +49,7 @@ function Editor(props) {
 
   const saveValueInDB = () => {
     if (fileName) {
-      fetch(url + "/post", {
+      fetch("http://localhost:1337/post", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -70,8 +59,7 @@ function Editor(props) {
         .then((response) => response.json())
         .then((data) => {
           console.log("Success:", data);
-          setAlertMessage("File " + fileName + " created!");
-          setGetDB("POST");
+          setAlertMessage("");
         })
         .catch((error) => {
           console.error("Error:", error);
@@ -84,7 +72,7 @@ function Editor(props) {
   };
   const putValueInDB = () => {
     if (fileName) {
-      fetch(url + "/put", {
+      fetch("http://localhost:1337/put", {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
@@ -98,8 +86,7 @@ function Editor(props) {
         .then((response) => response.json())
         .then((data) => {
           console.log("Success:", data);
-          setAlertMessage(fileName + " updated!");
-          setGetDB("Edit");
+          setAlertMessage("");
         })
         .catch((error) => {
           console.error("Error:", error);
@@ -113,7 +100,7 @@ function Editor(props) {
 
   const deleteValueInDB = () => {
     if (fileName) {
-      fetch(url + "/delete", {
+      fetch("http://localhost:1337/delete", {
         method: "DELETE",
         headers: {
           "Content-Type": "application/json",
@@ -125,14 +112,13 @@ function Editor(props) {
         .then((response) => response.json())
         .then((data) => {
           console.log("Success:", data);
-          setAlertMessage(fileName + " deleted from DB!");
-          setGetDB("Delete");
+          setAlertMessage("");
         })
         .catch((error) => {
           console.error("Error:", error);
         });
 
-      console.log("File Deleted");
+      console.log("File Updated");
     } else {
       setAlertMessage("Give a name to the file!");
     }
@@ -151,62 +137,27 @@ function Editor(props) {
             onChange={(event) => {
               setFileName(event.target.value);
             }}
-            value={fileName ? fileName : ""}
+            value={fileName ? fileName : null}
           />
-          {idOfDoc ? (
-            <>
-              <Button
-                style={{
-                  marginTop: "1.1%",
-                  textTransform: "none",
-                  borderLeft: "1px solid black",
-                }}
-                onClick={putValueInDB}
-              >
-                Edit | <EditIcon fontSize="small" />
-              </Button>
-              <Button
-                style={{
-                  marginTop: "1.1%",
-                  textTransform: "none",
-                  borderLeft: "1px solid black",
-                }}
-                onClick={() => {
-                  deleteValueInDB("");
-                  setEditorValue("");
-                  setFileName("");
-                  setIdOfDoc("");
-                }}
-              >
-                Delete
-                <DeleteForeverIcon fontSize="small" />
-              </Button>
-            </>
-          ) : null}
           <Button
             style={{
               marginTop: "1.1%",
               textTransform: "none",
-              borderLeft: "1px solid black",
+              borderRight: "1px solid black",
             }}
-            onClick={() => {
-              saveValueInDB("");
-              setEditorValue("");
-              setFileName("");
-              setIdOfDoc("");
-            }}
+            onClick={saveValueInDB}
           >
-            Create New File <NoteAddIcon fontSize="small" />
+            Save The File
           </Button>
           <Button
             style={{
               marginTop: "1.1%",
               textTransform: "none",
-              borderLeft: "1px solid black",
+              borderRight: "1px solid black",
             }}
             onClick={getEditorValue}
           >
-            Show In Console <FactCheckIcon fontSize="small" />
+            Show In Console
           </Button>
         </Box>
       </Paper>
@@ -215,7 +166,7 @@ function Editor(props) {
           style={{
             width: "80%",
             border: "1px solid black",
-            minHeight: "81vh",
+            minHeight: "82.5vh",
             display: "inline-block",
           }}
         >
@@ -233,7 +184,7 @@ function Editor(props) {
             width: "19.47%",
             display: "inline-block",
             position: "absolute",
-            minHeight: "81vh",
+            minHeight: "82.5vh",
           }}
         >
           {alertMessage ? (
@@ -247,29 +198,22 @@ function Editor(props) {
           <div
             style={{
               borderBottom: "1px solid black",
-              textAlign: "center",
             }}
           >
             <h3>Existing files</h3>
           </div>
-
-          <Paper
-            style={{
-              maxHeight: "54.8vh",
-              overflow: "auto",
-              textAlign: "center",
-            }}
-          >
+          {console.log(editorValue)}
+          <Paper style={{ maxHeight: "70vh", overflow: "auto" }}>
             <List>
               {api
                 ? api.map((DBvalue) => (
                     <div
                       style={{
                         marginTop: "3px",
+                        borderBottom: "1px solid black",
                       }}
                     >
                       <Button
-                        style={{ textTransform: "none" }}
                         onClick={() => {
                           setEditorValue(DBvalue.value);
                           setFileName(DBvalue.name);
@@ -281,6 +225,15 @@ function Editor(props) {
                       </Button>
 
                       <Divider variant="middle" />
+                      <div>
+                        <Button onClick={putValueInDB}>
+                          Edit <EditIcon fontSize="small" />
+                        </Button>
+                        <Button onClick={deleteValueInDB}>
+                          Delete
+                          <DeleteForeverIcon fontSize="small" />
+                        </Button>
+                      </div>
                     </div>
                   ))
                 : "There is no saved file to show"}

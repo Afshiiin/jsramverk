@@ -6,8 +6,13 @@
   "dependencies": {
     "@ckeditor/ckeditor5-build-classic": "^29.2.0",
     "@ckeditor/ckeditor5-react": "^3.0.2",
+    "@emotion/react": "^11.4.1",
+    "@emotion/styled": "^11.3.0",
     "@material-ui/core": "^4.12.3",
     "@material-ui/icons": "^4.11.2",
+    "@material-ui/lab": "^4.0.0-alpha.60",
+    "@mui/icons-material": "^5.0.1",
+    "@mui/material": "^5.0.2",
     "@testing-library/jest-dom": "^5.14.1",
     "@testing-library/react": "^11.2.7",
     "@testing-library/user-event": "^12.8.3",
@@ -22,7 +27,6 @@
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "deploy": "npm run build && rsync -av --delete build/ afbo19@ssh.student.bth.se:www/editor"
-
   },
   "eslintConfig": {
     "extends": [
